@@ -1,4 +1,4 @@
-import { Category, CreateTransationParams } from '@/types'
+import { Category, CreateTransationParams, UserInfo } from '@/types'
 import { Spin, Tabs, TabsProps, message } from 'antd'
 import { useEffect, useState } from 'react'
 import IconPark from './IconPark'
@@ -13,6 +13,16 @@ export default function AddTransation({ tags, onSubmit }: Props) {
   const [activeKey, setActiveKey] = useState('outcome')
   const [activeTag, setActiveTag] = useState<Category | null>(null)
   const [loading, setLoading] = useState(false)
+  const [userInfo, setUserInfo] = useState<UserInfo>()
+
+  useEffect(() => {
+    if (window && window.localStorage) {
+      const userInfo = window.localStorage.getItem('userInfo')
+      if (userInfo) {
+        setUserInfo(JSON.parse(userInfo))
+      }
+    }
+  }, [])
 
   useEffect(() => {
     const active = tags.find((tag) => tag.type === 'outcome')
@@ -25,9 +35,9 @@ export default function AddTransation({ tags, onSubmit }: Props) {
     setActiveTag(active ?? null)
   }
 
-  const handleSubmit = async (result: Omit<CreateTransationParams, 'category'>) => {
+  const handleSubmit = async (result: Omit<CreateTransationParams, 'category' | 'userId'>) => {
     setLoading(true)
-    const transation: CreateTransationParams = {
+    const transation: Omit<CreateTransationParams, 'userId'> = {
       ...result,
       amount: activeTag?.type === 'income' ? result.amount : -result.amount,
       category: activeTag!,
@@ -37,6 +47,7 @@ export default function AddTransation({ tags, onSubmit }: Props) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        Authorization: `Bearer ${userInfo?.id}`,
       },
       body: JSON.stringify(transation),
     })

@@ -12,7 +12,7 @@ import MaskDatePicker from './MaskDatePicker'
 const MAX_AMOUNT = 999999
 
 interface Props {
-  onSubmit: (result: Omit<CreateTransationParams, 'category'>) => void
+  onSubmit: (result: Omit<CreateTransationParams, 'category' | 'userId'>) => void
 }
 
 export default function Keypad({ onSubmit }: Props) {
@@ -24,7 +24,6 @@ export default function Keypad({ onSubmit }: Props) {
   const [note, setNote] = useState('')
   const [openPicker, setOpenPicker] = useState(false)
   const [date, setDate] = useState(dayjs().format('YYYY-MM-DD'))
-  const [userId, setUserId] = useState('195c8882-de03-42fa-8ad1-256825121674')
 
   const handleFlash = (input: string, bg: string = 'bg-gray-300') => {
     setInput(input)
@@ -69,7 +68,7 @@ export default function Keypad({ onSubmit }: Props) {
     if (value === 0) {
       return message.error('请输入金额')
     }
-    onSubmit({ amount: value, note, date, userId })
+    onSubmit({ amount: value, note, date })
   }
 
   const renderKey = (value: string) => (
