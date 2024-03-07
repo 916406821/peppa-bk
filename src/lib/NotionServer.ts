@@ -1,4 +1,4 @@
-import { Category, CreateTransationParams, Transation, User } from '@/types'
+import { Category, CreateTransationParams, Transation } from '@/types'
 import { Client } from '@notionhq/client'
 import dayjs from 'dayjs'
 
@@ -83,27 +83,27 @@ export default class NotionService {
   /**
    * 查询用户
    */
-  async queryUser(): Promise<Result[]> {
+  async queryUser(userId?: string): Promise<Result> {
     try {
-      const response = await this.client.databases.query({
-        database_id: user_id,
+      if (!userId) {
+        return {
+          success: false,
+        }
+      }
+
+      const response = await this.client.pages.retrieve({
+        page_id: userId,
       })
 
-      const users: User[] = []
-
-      response?.results?.forEach((page: any) => {
-        users.push({
-          id: page.id,
-          username: page.properties.username.title[0].plain_text,
-          password: page.properties.password.rich_text[0].plain_text,
-          email: page.properties.email.email,
-        })
-      })
-
-      return users
+      return {
+        success: true,
+        data: response,
+      }
     } catch (error) {
       console.error(error)
-      return []
+      return {
+        success: false,
+      }
     }
   }
 

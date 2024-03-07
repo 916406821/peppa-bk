@@ -1,16 +1,9 @@
-import '@icon-park/react/styles/index.css'
+import { SEO } from '@/lib/SEO'
 import type { Metadata } from 'next'
 import Script from 'next/script'
 import './globals.css'
 
-export const metadata: Metadata = {
-  title: '佩奇记账',
-  description: '佩奇记账是一款简洁易用的记账应用，旨在帮助用户轻松管理个人和家庭财务。',
-  appleWebApp: {
-    capable: true,
-    statusBarStyle: 'black-translucent',
-  },
-}
+export const metadata: Metadata = SEO()
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
