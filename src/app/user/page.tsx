@@ -15,9 +15,13 @@ export default function User() {
   useEffect(() => {
     if (window && window.localStorage) {
       const userInfo = window.localStorage.getItem('userInfo')
-      setUserInfo(userInfo ? JSON.parse(userInfo) : null)
+      if (userInfo) {
+        setUserInfo(userInfo ? JSON.parse(userInfo) : null)
+      } else {
+        router.replace('/login')
+      }
     }
-  }, [])
+  }, [router])
 
   const logout = () => {
     setVisible(true)
