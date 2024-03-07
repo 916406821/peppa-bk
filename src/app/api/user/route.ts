@@ -5,5 +5,5 @@ const notionServer = new NotionServer()
 
 export async function GET() {
   const data = await notionServer.queryUser()
-  return NextResponse.json(data)
+  return NextResponse.json(data, { status: 200 })
 }

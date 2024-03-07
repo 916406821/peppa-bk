@@ -1,4 +1,3 @@
-import { Close } from '@icon-park/react'
 import { ReactNode } from 'react'
 
 export interface Props {
@@ -11,18 +10,12 @@ export interface Props {
 export default function Modal({ open, onCancel, destroyOnClose, children }: Props) {
   return (
     <div
-      className={`fixed bottom-0 right-0 bg-bg-100 transition-all duration-200 ${
-        open ? 'w-full h-full' : 'w-0 h-0'
-      }`}
+      className={`fixed top-0 mx-auto h-full w-full max-w-[720px] bg-bg-100 ${open ? 'block' : 'hidden'}`}
     >
-      <div className="w-full p-4 h-full overflow-hidden relative">
-        <Close
-          className="absolute top-4 right-4 z-50"
-          theme="outline"
-          size="24"
-          fill="#333"
-          onClick={onCancel}
-        />
+      <div className="relative h-full w-full overflow-hidden p-4">
+        <button className="absolute right-4 top-7 z-50 text-sm" onClick={onCancel}>
+          取消
+        </button>
         {destroyOnClose ? open && children : children}
       </div>
     </div>

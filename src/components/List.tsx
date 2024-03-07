@@ -1,57 +1,60 @@
-import { tagIcons, type GroupTransaction } from '@/app/page'
+import type { Category, GroupTransation } from '@/types'
 import { Skeleton } from 'antd'
-
-export type Category = {
-  id: string
-  categoryName: string
-  categoryType: {
-    id: string
-    name: 'income' | 'outcome'
-  }
-}
+import dayjs from 'dayjs'
+import IconPark from './IconPark'
 
 interface Prop {
   loading: boolean
-  list: GroupTransaction[]
+  list: GroupTransation[]
+  tags: Category[]
 }
 
-export default function List({ list, loading }: Prop) {
+export default function List({ list, loading, tags }: Prop) {
   return (
-    <div className="bg-bg-200 rounded-3xl p-4 mt-4 w-11/12 grow mx-auto flex justify-start flex-col items-center">
-      {loading ? (
-        <>
-          <Skeleton loading={loading} avatar active />
-          <Skeleton loading={loading} avatar active />
-          <Skeleton loading={loading} avatar active />
-          <Skeleton loading={loading} avatar active />
-          <Skeleton loading={loading} avatar active />
-          <Skeleton loading={loading} avatar active />
-        </>
-      ) : list.length > 0 ? (
-        list.map((item) => (
-          <div className="w-full mb-6 text-text-100" key={item.date}>
-            <div className="w-full flex justify-between text-sm text-text-200">
-              <div>{item.date} 星期四</div>
-              <div>
-                收入：{item.incomeTotal} 支出：{item.outcomeTotal}
-              </div>
-            </div>
-            {item.list.map((it, index) => (
-              <div className="w-full pt-6 flex justify-between" key={index}>
-                <div className="flex gap-2 items-center">
-                  <div className="rounded-full bg-primary-100 flex items-center justify-center w-10 h-10">
-                    {tagIcons()[it.category.name]}
-                  </div>
-                  <div>{it.note}</div>
+    <div className="no-scrollbar mx-auto mt-4 box-border grid h-full w-11/12 grow overflow-y-auto rounded-t-3xl bg-bg-200 px-4 py-5">
+      <div className="mb-10">
+        {loading ? (
+          <>
+            <Skeleton loading={loading} avatar active />
+            <Skeleton loading={loading} avatar active />
+            <Skeleton loading={loading} avatar active />
+            <Skeleton loading={loading} avatar active />
+            <Skeleton loading={loading} avatar active />
+            <Skeleton loading={loading} avatar active />
+          </>
+        ) : list.length > 0 ? (
+          list.map((item) => (
+            <div className="mb-6 w-full text-sm text-text-100" key={item.date}>
+              <div className="flex w-full justify-between text-text-200">
+                <div>
+                  {item.date} {dayjs(item.date).format('dddd')}
                 </div>
-                <div>{it.amount}</div>
+                <div>
+                  收入：{item.incomeTotal} 支出：{item.outcomeTotal}
+                </div>
               </div>
-            ))}
+              {item.list.map((it, index) => {
+                const tag = tags.find((tag) => tag.id === it.category.id)
+                return (
+                  <div className="flex w-full justify-between pt-4" key={index}>
+                    <div className="flex items-center gap-2">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-bg-100">
+                        <IconPark className="text-primary-100" href={tag?.icon} />
+                      </div>
+                      <div>{it.note || tag?.name}</div>
+                    </div>
+                    <div>{it.amount}</div>
+                  </div>
+                )
+              })}
+            </div>
+          ))
+        ) : (
+          <div className="flex h-full w-full items-center justify-center text-sm text-text-200">
+            没有记账记录
           </div>
-        ))
-      ) : (
-        '暂无数据'
-      )}
+        )}
+      </div>
     </div>
   )
 }

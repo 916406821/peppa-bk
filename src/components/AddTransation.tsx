@@ -1,77 +1,91 @@
-import { Tabs, TabsProps } from 'antd'
+import { Category, CreateTransationParams } from '@/types'
+import { Spin, Tabs, TabsProps, message } from 'antd'
 import { useEffect, useState } from 'react'
-import { Category } from './List'
-import { tagIcons } from '@/app/page'
+import IconPark from './IconPark'
 import Keypad from './Keypad'
 
 interface Props {
+  tags: Category[]
   onSubmit: () => void
 }
 
-export default function AddTransation({ onSubmit }: Props) {
+export default function AddTransation({ tags, onSubmit }: Props) {
   const [activeKey, setActiveKey] = useState('outcome')
-  const [tags, setTags] = useState<Category[]>([])
-  const [activeTag, setActiveTag] = useState<string | null>(null)
+  const [activeTag, setActiveTag] = useState<Category | null>(null)
+  const [loading, setLoading] = useState(false)
 
   useEffect(() => {
-    async function fetchTags() {
-      const response = await fetch('/api/category')
-      const data = (await response.json()) as Category[]
-      setTags(data)
-      const active = data.find((tag) => tag.categoryType.name === 'outcome')
-      setActiveTag(active?.categoryName ?? null)
-    }
-    fetchTags()
-  }, [])
+    const active = tags.find((tag) => tag.type === 'outcome')
+    setActiveTag(active!)
+  }, [tags])
 
   const onChange = (key: string) => {
     setActiveKey(key)
-    const active = tags.find((tag) => tag.categoryType.name === key)
-    setActiveTag(active?.categoryName ?? null)
+    const active = tags.find((tag) => tag.type === key)
+    setActiveTag(active ?? null)
   }
 
-  const handleSubmit = (amount: number) => {
+  const handleSubmit = async (result: Omit<CreateTransationParams, 'category'>) => {
+    setLoading(true)
+    const transation: CreateTransationParams = {
+      ...result,
+      amount: activeTag?.type === 'income' ? result.amount : -result.amount,
+      category: activeTag!,
+    }
+
+    await fetch('/api/transation/create', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(transation),
+    })
+
+    setLoading(false)
+    message.success('记账成功')
     onSubmit()
   }
 
   const items: TabsProps['items'] = [
     {
       key: 'outcome',
-      label: <span className="text-primary-100 text-base">支出</span>,
+      label: <span className="text-base text-primary-100">支出</span>,
     },
     {
       key: 'income',
-      label: <span className="text-primary-100 text-base">收入</span>,
+      label: <span className="text-base text-primary-100">收入</span>,
     },
   ]
 
   return (
-    <div className="w-full h-full flex flex-col">
+    <div className="flex h-full w-full flex-col">
       <Tabs defaultActiveKey={activeKey} centered size="small" items={items} onChange={onChange} />
-      <div className="grow bg-bg-200 rounded-xl p-4">
-        <div className="grid grid-cols-4 gap-4">
+      <div className="grow rounded-xl bg-bg-200 p-4">
+        <div className="grid grid-cols-4 gap-4 text-sm">
           {tags
-            .filter((tag) => tag.categoryType.name === activeKey)
-            .map((tag, index) => (
-              <div
-                className="flex flex-col items-center"
-                key={index}
-                onClick={() => setActiveTag(tag.categoryName)}
-              >
+            .filter((tag) => tag.type === activeKey)
+            .map((tag, index) => {
+              const active = activeTag?.name === tag.name
+              return (
                 <div
-                  className={`rounded-full flex items-center justify-center w-10 h-10
-                  ${activeTag === tag.categoryName ? 'bg-primary-100' : 'bg-bg-100'}`}
+                  className="flex flex-col items-center gap-2"
+                  key={index}
+                  onClick={() => setActiveTag(tag)}
                 >
-                  {activeTag === tag.categoryName
-                    ? tagIcons()[tag.categoryName]
-                    : tagIcons('#333')[tag.categoryName]}
+                  <div
+                    className={`flex h-10 w-10 items-center justify-center rounded-full
+                    ${active ? 'bg-primary-100' : 'bg-bg-100'}`}
+                  >
+                    <IconPark href={tag.icon} className="text-text-100" />
+                  </div>
+                  {tag.name}
                 </div>
-                {tag.categoryName}
-              </div>
-            ))}
+              )
+            })}
         </div>
       </div>
-      <Keypad onSubmit={(amount) => handleSubmit(amount)} />
+      <Keypad onSubmit={(result) => handleSubmit(result)} />
+      <Spin spinning={loading} fullscreen wrapperClassName="text-primary-100" />
     </div>
   )
 }

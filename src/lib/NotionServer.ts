@@ -1,10 +1,23 @@
+import { Category, CreateTransationParams, Transation, User } from '@/types'
 import { Client } from '@notionhq/client'
+import dayjs from 'dayjs'
 
 const auth = process.env.NOTION_ACCESS_TOKEN
 
 const user_id = process.env.NOTION_DATABASE_USER_ID ?? '' // 用户表
 const category_id = process.env.NOTION_DATABASE_CATEGORY_ID ?? '' // 账目类别表
 const transation_id = process.env.NOTION_DATABASE_TRANSATION_ID ?? '' // 账目记录表
+
+type LoginParams = {
+  username: string
+  password: string
+}
+
+type Success = {
+  success: boolean
+  message: string
+  data?: any
+}
 
 type Result = any
 
@@ -16,106 +29,267 @@ export default class NotionService {
   }
 
   /**
+   * 登录
+   */
+  async login(params: LoginParams): Promise<Success> {
+    try {
+      const response = await this.client.databases.query({
+        database_id: user_id,
+        filter: {
+          and: [
+            {
+              property: 'username',
+              title: {
+                equals: params.username,
+              },
+            },
+            {
+              property: 'password',
+              rich_text: {
+                equals: params.password,
+              },
+            },
+          ],
+        },
+      })
+
+      const data = response.results as any
+
+      if (data && data.length > 0) {
+        return {
+          success: true,
+          message: '登录成功',
+          data: {
+            id: data[0].id,
+            username: data[0].properties.username.title[0].plain_text,
+            email: data[0].properties.email.email,
+          },
+        }
+      }
+
+      return {
+        success: false,
+        message: '用户名或密码错误',
+      }
+    } catch (error) {
+      console.error(error)
+      return {
+        success: false,
+        message: '登录失败',
+      }
+    }
+  }
+
+  /**
    * 查询用户
    */
   async queryUser(): Promise<Result[]> {
-    const response = await this.client.databases.query({
-      database_id: user_id,
-    })
+    try {
+      const response = await this.client.databases.query({
+        database_id: user_id,
+      })
 
-    return response.results.map((item) => NotionService.transformer(item))
+      const users: User[] = []
+
+      response?.results?.forEach((page: any) => {
+        users.push({
+          id: page.id,
+          username: page.properties.username.title[0].plain_text,
+          password: page.properties.password.rich_text[0].plain_text,
+          email: page.properties.email.email,
+        })
+      })
+
+      return users
+    } catch (error) {
+      console.error(error)
+      return []
+    }
   }
 
   /**
    * 查询账目类别
    */
-  async queryCategory(): Promise<Result[]> {
-    const response = await this.client.databases.query({
-      database_id: category_id,
-    })
+  async queryCategory(): Promise<Result> {
+    try {
+      const response = await this.client.databases.query({
+        database_id: category_id,
+      })
 
-    return response.results.map((item) => NotionService.transformer(item))
+      const categorys: Category[] = []
+
+      response?.results?.forEach((page: any) => {
+        categorys.push({
+          id: page.id,
+          name: page.properties.name.title[0].plain_text,
+          type: page.properties.type.select.name,
+          icon: page.properties.icon.rich_text[0].plain_text,
+        })
+      })
+
+      return categorys
+    } catch (error) {
+      console.error(error)
+      return []
+    }
+  }
+
+  /**
+   * 创建账目类别
+   */
+  async createCategory(params: Category): Promise<Result> {
+    try {
+      const response = await this.client.pages.create({
+        parent: { database_id: category_id },
+        properties: {
+          name: {
+            type: 'title',
+            title: [
+              {
+                type: 'text',
+                text: {
+                  content: params.name,
+                },
+              },
+            ],
+          },
+          type: {
+            type: 'select',
+            select: {
+              name: params.type,
+            },
+          },
+        },
+      })
+
+      return response
+    } catch (error) {
+      console.error(error)
+      return []
+    }
   }
 
   /**
    * 查询账目记录
    */
-  async queryTransation(): Promise<Result[]> {
-    const response = await this.client.databases.query({
-      database_id: transation_id,
-      sorts: [{ property: 'date', direction: 'descending' }],
-    })
+  async queryTransation({
+    month,
+    userId,
+  }: {
+    month?: string
+    userId?: string
+  }): Promise<Transation[]> {
+    let filterOptions
 
-    const data = response.results
-      .map((item) => NotionService.transformer(item))
-      .reduce((acc, cur) => {
-        const key = cur.date
-        const index = acc.findIndex((item: any) => item.date === key)
+    if (!userId) {
+      return []
+    }
 
-        if (acc.length > 0 && index > -1) {
-          acc[index].list.push(cur)
-        } else {
-          acc.push({ date: key, list: [cur] })
-        }
-        return acc
-      }, [])
-
-    data.forEach((item: any) => {
-      const { list } = item
-      let incomeTotal = 0
-      let outcomeTotal = 0
-      list.forEach((item: any) => {
-        if (item.amount > 0) {
-          incomeTotal += item.amount
-        } else {
-          outcomeTotal += item.amount * -1
-        }
-      })
-      item.incomeTotal = incomeTotal
-      item.outcomeTotal = outcomeTotal
-    })
-
-    return data
-  }
-
-  /**
-   * 转换Notion数据格式
-   * @param page
-   * @returns
-   */
-  private static transformer(page: any) {
-    let data: any = {}
-
-    for (const key in page.properties) {
-      switch (page.properties[key].type) {
-        case 'relation':
-          if (page.properties[key].relation[0]) data[key] = page.properties[key].relation[0]?.id
-          break
-        case 'unique_id':
-          data[key] = page.properties[key].id
-          break
-        case 'title':
-        case 'rich_text':
-          data[key] = page.properties[key][page.properties[key].type][0].text.content
-          break
-        case 'email':
-          data[key] = page.properties[key].email
-          break
-        case 'date':
-          data[key] = page.properties[key].date?.start
-          break
-        case 'number':
-          data[key] = page.properties[key].number
-          break
-        case 'select':
-          data[key] = page.properties[key].select
-          break
-        default:
-          data[key] = page.properties[key]
-          break
+    if (month) {
+      const startDate = dayjs(month).startOf('month').format('YYYY-MM-DD')
+      const endDate = dayjs(month).endOf('month').format('YYYY-MM-DD')
+      filterOptions = {
+        and: [
+          {
+            property: 'user',
+            relation: {
+              contains: userId,
+            },
+          },
+          {
+            property: 'date',
+            date: {
+              on_or_after: startDate,
+            },
+          },
+          {
+            property: 'date',
+            date: {
+              on_or_before: endDate,
+            },
+          },
+        ],
       }
     }
 
-    return data
+    try {
+      const response = await this.client.databases.query({
+        database_id: transation_id,
+        sorts: [{ property: 'date', direction: 'descending' }],
+        filter: filterOptions,
+      })
+
+      const transations: Transation[] = []
+
+      response?.results?.forEach((page: any) => {
+        transations.push({
+          id: page.id,
+          userId: page.properties.user.relation[0].id,
+          category: page.properties.category.relation[0],
+          amount: page.properties.amount.number,
+          date: page.properties.date.date.start,
+          note: page.properties.note.title[0].plain_text,
+        })
+      })
+      return transations
+    } catch (error) {
+      console.error(error)
+      return []
+    }
+  }
+
+  /**
+   * 创建账目记录
+   */
+  async createTransation(params: CreateTransationParams): Promise<Result> {
+    try {
+      const response = await this.client.pages.create({
+        parent: { database_id: transation_id },
+        properties: {
+          category: {
+            type: 'relation',
+            relation: [
+              {
+                id: params.category.id,
+              },
+            ],
+          },
+          amount: {
+            type: 'number',
+            number: params.amount,
+          },
+          date: {
+            type: 'date',
+            date: {
+              start: params.date,
+            },
+          },
+          user: {
+            type: 'relation',
+            relation: [
+              {
+                id: params.userId,
+              },
+            ],
+          },
+          note: {
+            type: 'title',
+            title: [
+              {
+                type: 'text',
+                text: {
+                  content: params.note,
+                },
+              },
+            ],
+          },
+        },
+      })
+
+      return response
+    } catch (error) {
+      console.error(error)
+      return []
+    }
   }
 }

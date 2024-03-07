@@ -2,6 +2,47 @@
 @tailwind components;
 @tailwind utilities;
 
+.no-scrollbar {
+  scrollbar-width: none;
+}
+
+.no-scrollbar {
+  scrollbar-height: none;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  width: 0;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  height: 0;
+}
+
+.iconpark-icon {
+  width: 20px;
+  height: 20px;
+}
+
+.ant-picker-body {
+  padding: 0 12px !important;
+}
+
+.ant-picker-cell {
+  padding: 4px 0 !important;
+}
+
+.ant-spin .ant-spin-dot-item {
+  background-color: #43a49b !important;
+}
+
+.ant-picker-cell-today .ant-picker-cell-inner::before {
+  border-color: #43a49b !important;
+}
+
+.ant-picker-cell-selected .ant-picker-cell-inner {
+  background-color: #43a49b !important;
+}
+
 .screen-modal {
   inset: 0;
   height: 100%;
@@ -13,5 +54,5 @@
 }
 
 .ant-tabs-ink-bar {
-  background: #43A49B !important;
+  background: #43a49b !important;
 }
