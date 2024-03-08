@@ -12,7 +12,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="bg-bg-100 font-sans">
         <AntdStyleProvider>{children}</AntdStyleProvider>
       </body>
-      <Script src="https://lf1-cdn-tos.bytegoofy.com/obj/iconpark/svg_31600_12.7d4442de5a1524554cc8af58812785d6.js" />
+      <Script src="https://lf1-cdn-tos.bytegoofy.com/obj/iconpark/svg_31600_23.d2c449976f76408e7e6cce55e96ba42c.js" />
     </html>
   )
 }

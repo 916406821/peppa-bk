@@ -114,6 +114,12 @@ export default class NotionService {
     try {
       const response = await this.client.databases.query({
         database_id: category_id,
+        sorts: [
+          {
+            property: 'sort',
+            direction: 'ascending',
+          },
+        ],
       })
 
       const categorys: Category[] = []

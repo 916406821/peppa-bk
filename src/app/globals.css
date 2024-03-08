@@ -23,6 +23,11 @@
   height: 20px;
 }
 
+.no-border {
+  border: none !important;
+  box-shadow: none !important;
+}
+
 .ant-picker-body {
   padding: 0 12px !important;
 }

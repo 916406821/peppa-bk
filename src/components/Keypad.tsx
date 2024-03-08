@@ -85,16 +85,16 @@ export default function Keypad({ onSubmit }: Props) {
   const isToday = dayjs().format('YYYY-MM-DD') === date
 
   return (
-    <div className="absolute bottom-0 left-0 w-full">
+    <div id='keypad' className="absolute bottom-0 left-0 w-full">
       <div className="bg-white p-2">
-        <div className=" flex flex-row-reverse px-2 pb-2 text-xl">{amount}</div>
-        <div className="mx-2 flex rounded bg-gray-100 p-2">
+        <div className=" flex flex-row-reverse px-2 text-xl">{amount}</div>
+        <div className="flex items-center rounded bg-gray-100 px-2">
           备注：
           <input
             value={note}
             maxLength={10}
             onChange={(event) => setNote(event.target.value)}
-            className="grow border-none bg-transparent outline-none"
+            className="grow bg-transparent no-border"
             placeholder="点击填写备注（最多10个汉字）"
           />
         </div>
@@ -136,7 +136,7 @@ export default function Keypad({ onSubmit }: Props) {
         {renderKey('5')}
         {renderKey('6')}
         <button
-          className={`row-span-3 flex h-full w-full items-center justify-center bg-primary-100 p-4 text-lg
+          className={`row-span-3 flex h-full w-full items-center justify-center bg-primary-100 px-4 py-2 text-lg
           ${input === 'submit' ? bg : ''}`}
           onClick={handleSubmit}
         >
@@ -148,7 +148,7 @@ export default function Keypad({ onSubmit }: Props) {
         {renderKey('.')}
         {renderKey('0')}
         <button
-          className={`flex h-full w-full items-center justify-center bg-gray-300 p-4
+          className={`flex h-full w-full items-center justify-center bg-gray-300 px-4 py-2
           ${input === 'delete' ? bg : ''}`}
           onClick={handleDelete}
         >
