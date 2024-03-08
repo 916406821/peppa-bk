@@ -64,7 +64,7 @@ export default function User() {
   }
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-[720px] flex-col items-center gap-6 bg-white">
+    <main className="mx-auto flex min-h-screen max-w-[720px] flex-col items-center gap-6">
       <header className="relative flex w-full flex-col items-center gap-2 bg-primary-100 p-4 pb-16">
         <button className="self-start">
           <Link href="/">
@@ -77,7 +77,7 @@ export default function User() {
         </div>
         <div className="text-lg font-medium">{userInfo?.username}</div>
         <div className="absolute -bottom-10 w-full px-4">
-          <div className="grid grid-cols-2 rounded-lg bg-white py-4 text-center shadow-md">
+          <div className="grid grid-cols-2 rounded-lg bg-bg-100 py-4 text-center shadow-md">
             <Statistic title="记账总天数" valueStyle={valueStyle} value={totals.days} />
             <Statistic title="记账总笔数" valueStyle={valueStyle} value={totals.times} />
           </div>
