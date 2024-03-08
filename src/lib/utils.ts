@@ -1,5 +1,5 @@
-import { GroupTransation, Transation } from "@/types"
-import BigNumber from "bignumber.js"
+import { GroupTransation, Transation } from '@/types'
+import BigNumber from 'bignumber.js'
 
 export function getGroupList(list: Transation[]) {
   const groupMap = new Map<string, GroupTransation>()

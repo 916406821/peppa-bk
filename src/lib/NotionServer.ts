@@ -191,6 +191,17 @@ export default class NotionService {
       return []
     }
 
+    filterOptions = {
+      and: [
+        {
+          property: 'user',
+          relation: {
+            contains: userId,
+          },
+        },
+      ],
+    }
+
     if (month) {
       const startDate = dayjs(month).startOf('month').format('YYYY-MM-DD')
       const endDate = dayjs(month).endOf('month').format('YYYY-MM-DD')
