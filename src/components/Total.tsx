@@ -6,8 +6,8 @@ import MaskDatePicker from './MaskDatePicker'
 interface Props {
   month: string
   monthTotal: {
-    monthIncomeTotal: number
-    monthOutcomeTotal: number
+    monthIncomeTotal: string
+    monthOutcomeTotal: string
   }
   onMonthChange: (month: string) => void
 }

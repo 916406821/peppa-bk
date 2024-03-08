@@ -34,8 +34,8 @@ type Transation = {
 type GroupTransation = {
   date: string
   list: Transation[]
-  incomeTotal: number
-  outcomeTotal: number
+  incomeTotal: string
+  outcomeTotal: string
 }
 
 export type { Category, CreateTransationParams, GroupTransation, Transation, User, UserInfo }

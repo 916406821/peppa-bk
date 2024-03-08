@@ -6,6 +6,7 @@ import IconPark from '@/components/IconPark'
 import List from '@/components/List'
 import Modal from '@/components/Modal'
 import Total from '@/components/Total'
+import { getGroupList } from '@/lib/utils'
 import { Category, GroupTransation, Transation, UserInfo } from '@/types'
 import { message } from 'antd'
 import dayjs from 'dayjs'
@@ -14,55 +15,13 @@ import { redirect } from 'next/navigation'
 import { useCallback, useEffect, useState } from 'react'
 dayjs.locale('zh-cn')
 
-function getGroupList(list: Transation[]) {
-  const groupMap = new Map<string, GroupTransation>()
-  let monthIncomeTotal = 0
-  let monthOutcomeTotal = 0
-
-  list.forEach((item) => {
-    const { date, amount } = item
-    const key = date
-
-    if (groupMap.has(key)) {
-      const group = groupMap.get(key)!
-      group.list.push(item)
-      if (amount > 0) {
-        group.incomeTotal += amount
-      } else {
-        group.outcomeTotal -= amount
-      }
-      group.incomeTotal = Number(group.incomeTotal.toFixed(2))
-      group.outcomeTotal = Number(group.outcomeTotal.toFixed(2))
-    } else {
-      groupMap.set(key, {
-        date: key,
-        list: [item],
-        incomeTotal: Math.abs(Math.max(amount, 0)),
-        outcomeTotal: Math.abs(Math.min(amount, 0)),
-      })
-    }
-
-    if (amount > 0) {
-      monthIncomeTotal += amount
-    } else {
-      monthOutcomeTotal -= amount
-    }
-  })
-
-  return {
-    groupList: Array.from(groupMap.values()),
-    monthIncomeTotal,
-    monthOutcomeTotal,
-  }
-}
-
 export default function Home() {
   const [userInfo, setUserInfo] = useState<UserInfo | null>(null)
   const [month, setMonth] = useState(dayjs().format('YYYY-MM'))
   const [groupList, setGroupList] = useState<GroupTransation[]>([])
   const [monthTotal, setMonthTotal] = useState({
-    monthIncomeTotal: 0,
-    monthOutcomeTotal: 0,
+    monthIncomeTotal: '0',
+    monthOutcomeTotal: '0',
   })
   const [tags, setTags] = useState<Category[]>([])
   const [loading, setLoading] = useState(true)
@@ -82,6 +41,7 @@ export default function Home() {
   }, [])
 
   const fetchData = useCallback(async () => {
+    if (!userInfo) return
     setLoading(true)
     const response = await fetch(`/api/transation?month=${month}`, {
       headers: {
