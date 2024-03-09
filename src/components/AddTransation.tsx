@@ -1,20 +1,23 @@
-import { Category, CreateTransationParams, UserInfo } from '@/types'
-import { Spin, Tabs, TabsProps, message } from 'antd'
+import { Category, CreateTransationParams, Transation, UserInfo } from '@/types'
+import { Modal, Spin, Tabs, TabsProps, message } from 'antd'
 import { useEffect, useState } from 'react'
 import IconPark from './IconPark'
 import Keypad from './Keypad'
 
 interface Props {
   tags: Category[]
+  editValue?: Transation
   onSubmit: () => void
+  onDelete: () => void
 }
 
-export default function AddTransation({ tags, onSubmit }: Props) {
+export default function AddTransation({ tags, onSubmit, editValue, onDelete }: Props) {
   const [activeKey, setActiveKey] = useState('outcome')
   const [activeTag, setActiveTag] = useState<Category | null>(null)
   const [loading, setLoading] = useState(false)
   const [userInfo, setUserInfo] = useState<UserInfo>()
   const [maxHeight, setMaxHeight] = useState(0)
+  const [visible, setVisible] = useState(false)
 
   useEffect(() => {
     if (window && window.localStorage) {
@@ -26,9 +29,13 @@ export default function AddTransation({ tags, onSubmit }: Props) {
   }, [])
 
   useEffect(() => {
-    const active = tags.find((tag) => tag.type === 'outcome')
+    let active = tags.find((tag) => tag.type === 'outcome')
+    if (!!editValue) {
+      active = tags.find((tag) => tag.id === editValue?.category.id)
+      setActiveKey(editValue.amount > 0 ? 'income' : 'outcome')
+    }
     setActiveTag(active!)
-  }, [tags])
+  }, [tags, editValue])
 
   const onChange = (key: string) => {
     setActiveKey(key)
@@ -44,18 +51,50 @@ export default function AddTransation({ tags, onSubmit }: Props) {
       category: activeTag!,
     }
 
-    await fetch('/api/transation/create', {
+    if (!!editValue) {
+      await fetch('/api/transation/update', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${userInfo?.id}`,
+        },
+        body: JSON.stringify({ params: transation, pageId: editValue.id }),
+      })
+      message.success('修改成功')
+    } else {
+      await fetch('/api/transation/create', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${userInfo?.id}`,
+        },
+        body: JSON.stringify(transation),
+      })
+      message.success('记账成功')
+    }
+
+    setLoading(false)
+    onSubmit()
+  }
+
+  const handleDelete = async () => {
+    setLoading(true)
+    const respose = await fetch('/api/transation/delete', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${userInfo?.id}`,
       },
-      body: JSON.stringify(transation),
+      body: JSON.stringify({ pageId: editValue?.id }),
     })
-
+    const data = await respose.json()
     setLoading(false)
-    message.success('记账成功')
-    onSubmit()
+    if (data.success) {
+      message.success(data.message)
+      onDelete()
+    } else {
+      message.error(data.message)
+    }
   }
 
   const items: TabsProps['items'] = [
@@ -84,9 +123,17 @@ export default function AddTransation({ tags, onSubmit }: Props) {
 
   return (
     <div className="flex h-full w-full flex-col">
+      {!!editValue && (
+        <button
+          className="absolute left-4 top-6 z-50 rounded border border-red-500 p-1 text-sm text-red-500"
+          onClick={() => setVisible(true)}
+        >
+          删除
+        </button>
+      )}
       <Tabs
         id="antd-tabs"
-        defaultActiveKey={activeKey}
+        activeKey={activeKey}
         centered
         size="small"
         items={items}
@@ -121,8 +168,28 @@ export default function AddTransation({ tags, onSubmit }: Props) {
             })}
         </div>
       </div>
-      <Keypad onSubmit={(result) => handleSubmit(result)} />
+      <Keypad editValue={editValue} onSubmit={(result) => handleSubmit(result)} />
       <Spin spinning={loading} fullscreen wrapperClassName="text-primary-100" />
+      <Modal
+        title="确认删除该条记录吗？"
+        okText="确认"
+        cancelText="取消"
+        styles={{
+          body: {
+            color: 'red',
+          },
+        }}
+        centered
+        mask
+        closable={false}
+        width={400}
+        maskClosable
+        open={visible}
+        onOk={handleDelete}
+        onCancel={() => setVisible(false)}
+      >
+        删除后不可恢复
+      </Modal>
     </div>
   )
 }

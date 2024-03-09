@@ -26,6 +26,7 @@ export default function Home() {
   const [tags, setTags] = useState<Category[]>([])
   const [loading, setLoading] = useState(true)
   const [open, setOpen] = useState(false)
+  const [editValue, setEditValue] = useState<Transation>()
 
   useEffect(() => {
     if (typeof window !== 'undefined' && window.localStorage) {
@@ -76,7 +77,13 @@ export default function Home() {
     message.warning('功能开发中...')
   }
 
+  const handleClickItem = (value: Transation) => {
+    setEditValue(value)
+    setOpen(true)
+  }
+
   const handleAdd = () => {
+    setEditValue(undefined)
     setOpen(true)
   }
 
@@ -84,7 +91,12 @@ export default function Home() {
     <main className="mx-auto flex h-screen w-screen max-w-[720px] flex-col items-center">
       <Header />
       <Total month={month} monthTotal={monthTotal} onMonthChange={handleMonthChange} />
-      <List loading={loading} list={groupList} tags={tags} />
+      <List
+        loading={loading}
+        list={groupList}
+        tags={tags}
+        onClick={(value) => handleClickItem(value)}
+      />
       <button
         className="fixed bottom-6 left-4 flex h-10 w-10 items-center justify-center rounded-full bg-primary-100"
         onClick={handleMenu}
@@ -100,7 +112,12 @@ export default function Home() {
       <Modal open={open} destroyOnClose onCancel={() => setOpen(false)}>
         <AddTransation
           tags={tags}
+          editValue={editValue}
           onSubmit={() => {
+            setOpen(false)
+            fetchData()
+          }}
+          onDelete={() => {
             setOpen(false)
             fetchData()
           }}

@@ -1,29 +1,36 @@
 'use client'
 
-import { CreateTransationParams } from '@/types'
+import { CreateTransationParams, Transation } from '@/types'
 import { Calendar, DeleteKey } from '@icon-park/react'
 import { message } from 'antd'
 import locale from 'antd/es/date-picker/locale/zh_CN'
 import dayjs, { Dayjs } from 'dayjs'
 import 'dayjs/locale/zh-cn'
-import { useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import MaskDatePicker from './MaskDatePicker'
 
 const MAX_AMOUNT = 999999
 
 interface Props {
+  editValue?: Transation
   onSubmit: (result: Omit<CreateTransationParams, 'category' | 'userId'>) => void
 }
 
-export default function Keypad({ onSubmit }: Props) {
-  const datePickerRef = useRef(null)
-
+export default function Keypad({ editValue, onSubmit }: Props) {
   const [input, setInput] = useState('')
   const [amount, setAmount] = useState('0')
   const [bg, setBg] = useState('')
   const [note, setNote] = useState('')
   const [openPicker, setOpenPicker] = useState(false)
   const [date, setDate] = useState(dayjs().format('YYYY-MM-DD'))
+
+  useEffect(() => {
+    if (!!editValue) {
+      setAmount(Math.abs(editValue.amount).toString())
+      setNote(editValue.note)
+      setDate(editValue.date)
+    }
+  }, [editValue])
 
   const handleFlash = (input: string, bg: string = 'bg-gray-300') => {
     setInput(input)
@@ -85,7 +92,7 @@ export default function Keypad({ onSubmit }: Props) {
   const isToday = dayjs().format('YYYY-MM-DD') === date
 
   return (
-    <div id='keypad' className="absolute bottom-0 left-0 w-full">
+    <div id="keypad" className="absolute bottom-0 left-0 w-full">
       <div className="bg-white p-2">
         <div className=" flex flex-row-reverse px-2 text-xl">{amount}</div>
         <div className="flex items-center rounded bg-gray-100 px-2">
@@ -94,7 +101,7 @@ export default function Keypad({ onSubmit }: Props) {
             value={note}
             maxLength={10}
             onChange={(event) => setNote(event.target.value)}
-            className="grow bg-transparent no-border"
+            className="no-border grow bg-transparent"
             placeholder="点击填写备注（最多10个汉字）"
           />
         </div>
@@ -104,7 +111,6 @@ export default function Keypad({ onSubmit }: Props) {
         {renderKey('8')}
         {renderKey('9')}
         <div
-          ref={datePickerRef}
           className={`flex h-full w-full items-center justify-center text-sm ${input === 'date' ? bg : ''}`}
         >
           <div
@@ -122,7 +128,7 @@ export default function Keypad({ onSubmit }: Props) {
           </div>
           <div className="invisible relative -left-16 h-0 w-0">
             <MaskDatePicker
-              defaultValue={dayjs()}
+              value={dayjs(date)}
               open={openPicker}
               locale={locale}
               maxDate={dayjs()}

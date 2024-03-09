@@ -97,6 +97,7 @@ export default function User() {
         okText="确认"
         cancelText="取消"
         centered
+        closable={false}
         mask
         width={400}
         maskClosable

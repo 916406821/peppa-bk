@@ -1,4 +1,4 @@
-import type { Category, GroupTransation } from '@/types'
+import type { Category, GroupTransation, Transation } from '@/types'
 import { Skeleton } from 'antd'
 import dayjs from 'dayjs'
 import IconPark from './IconPark'
@@ -7,9 +7,10 @@ interface Prop {
   loading: boolean
   list: GroupTransation[]
   tags: Category[]
+  onClick: (value: Transation) => void
 }
 
-export default function List({ list, loading, tags }: Prop) {
+export default function List({ list, loading, tags, onClick }: Prop) {
   return (
     <div className="no-scrollbar mx-auto mt-4 box-border grid h-full w-11/12 grow overflow-y-auto rounded-t-3xl bg-bg-200 px-4 py-5">
       <div className="mb-10">
@@ -36,7 +37,11 @@ export default function List({ list, loading, tags }: Prop) {
               {item.list.map((it, index) => {
                 const tag = tags.find((tag) => tag.id === it.category.id)
                 return (
-                  <div className="flex w-full justify-between pt-4" key={index}>
+                  <div
+                    className="flex w-full justify-between pt-4 active:bg-bg-200"
+                    key={index}
+                    onClick={() => onClick(it)}
+                  >
                     <div className="flex items-center gap-2">
                       <div className="flex h-10 w-10 items-center justify-center rounded-full bg-bg-100">
                         <IconPark className="text-primary-100" href={tag?.icon} />

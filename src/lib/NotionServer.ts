@@ -199,6 +199,12 @@ export default class NotionService {
             contains: userId,
           },
         },
+        {
+          property: 'deleted',
+          checkbox: {
+            does_not_equal: true,
+          },
+        },
       ],
     }
 
@@ -211,6 +217,12 @@ export default class NotionService {
             property: 'user',
             relation: {
               contains: userId,
+            },
+          },
+          {
+            property: 'deleted',
+            checkbox: {
+              does_not_equal: true,
             },
           },
           {
@@ -304,6 +316,90 @@ export default class NotionService {
       })
 
       return response
+    } catch (error) {
+      console.error(error)
+      return []
+    }
+  }
+
+  /**
+   * 更新账目记录
+   */
+  async updateTransation({
+    pageId,
+    params,
+  }: {
+    pageId: string
+    params: Transation
+  }): Promise<Result> {
+    try {
+      const response = await this.client.pages.update({
+        page_id: pageId,
+        properties: {
+          category: {
+            type: 'relation',
+            relation: [
+              {
+                id: params.category.id,
+              },
+            ],
+          },
+          amount: {
+            type: 'number',
+            number: params.amount,
+          },
+          date: {
+            type: 'date',
+            date: {
+              start: params.date,
+            },
+          },
+          user: {
+            type: 'relation',
+            relation: [
+              {
+                id: params.userId,
+              },
+            ],
+          },
+          note: {
+            type: 'title',
+            title: [
+              {
+                type: 'text',
+                text: {
+                  content: params.note,
+                },
+              },
+            ],
+          },
+        },
+      })
+
+      return response
+    } catch (error) {
+      console.error(error)
+      return []
+    }
+  }
+
+  /**
+   * 删除账目记录
+   */
+  async removeTransation({ pageId }: { pageId: string }) {
+    try {
+      await this.client.pages.update({
+        page_id: pageId,
+        properties: {
+          deleted: {
+            checkbox: true,
+          },
+        },
+      })
+      return {
+        success: true,
+        message: '删除成功',
+      }
     } catch (error) {
       console.error(error)
       return []
