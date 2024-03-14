@@ -1,0 +1,32 @@
+{
+    "name": "佩奇记账",
+    "short_name": "佩奇记账",
+    "theme_color": "#26A69A",
+    "background_color": "#E0F2F1",
+    "display": "standalone",
+    "scope": "/",
+    "start_url": "/",
+    "description": "佩奇记账是一款简洁易用的记账应用，旨在帮助用户轻松管理个人和家庭财务。",
+    "icons": [
+        {
+            "src": "/icon-192x192.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "/icon-256x256.png",
+            "sizes": "256x256",
+            "type": "image/png"
+        },
+        {
+            "src": "/icon-384x384.png",
+            "sizes": "384x384",
+            "type": "image/png"
+        },
+        {
+            "src": "/icon-512x512.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ]
+}

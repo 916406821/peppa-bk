@@ -8,5 +8,6 @@ export function SEO(title?: string): Metadata {
       capable: true,
       statusBarStyle: 'black-translucent',
     },
+    manifest: '/manifest.webmanifest',
   }
 }
