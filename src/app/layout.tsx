@@ -1,10 +1,14 @@
 import AntdStyleProvider from '@/components/AntdStyleProvider'
 import { SEO } from '@/lib/SEO'
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import Script from 'next/script'
 import './globals.css'
 
 export const metadata: Metadata = SEO()
+
+export const viewport: Viewport = {
+  themeColor: '#E0F2F1',
+}
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
