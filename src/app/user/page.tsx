@@ -1,8 +1,9 @@
 'use client'
 
 import IconPark from '@/components/IconPark'
+import { MAX_AMOUNT } from '@/components/Keypad'
 import { Transation, UserInfo } from '@/types'
-import { Modal, Statistic } from 'antd'
+import { InputNumber, Modal, Statistic, message } from 'antd'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
@@ -21,12 +22,15 @@ export default function User() {
     days: 0,
     times: 0,
   })
+  const [modalOpen, setModalOpen] = useState(false)
+  const [budget, setBudget] = useState<number>(0)
 
   useEffect(() => {
     if (window && window.localStorage) {
-      const userInfo = window.localStorage.getItem('userInfo')
+      const userInfo = JSON.parse(localStorage.getItem('userInfo')!)
       if (userInfo) {
-        setUserInfo(userInfo ? JSON.parse(userInfo) : null)
+        setUserInfo(userInfo)
+        setBudget(userInfo.month_budget)
       } else {
         router.replace('/login')
       }
@@ -63,21 +67,47 @@ export default function User() {
     setVisible(true)
   }
 
+  const saveBudget = async () => {
+    const response = await fetch('/api/budget', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${userInfo?.id}`,
+      },
+      body: JSON.stringify({
+        month_budget: budget,
+      }),
+    })
+    const data = await response.json()
+
+    if (data.success) {
+      localStorage.setItem('userInfo', JSON.stringify(data.data))
+      setUserInfo(data.data)
+      message.success(data.message)
+      setModalOpen(false)
+    }
+  }
+
   return (
-    <main className="mx-auto flex min-h-screen max-w-[720px] flex-col items-center gap-6">
+    <main className="mx-auto flex min-h-screen max-w-[720px] flex-col items-center gap-6 bg-white">
       <header className="relative flex w-full flex-col items-center gap-2 bg-primary-100 p-4 pb-16">
-        <button className="self-start">
-          <Link href="/">
-            <IconPark href="#home" className="!h-6 !w-6" />
-          </Link>
-        </button>
+        <div className="flex w-full justify-between">
+          <button>
+            <Link href="/">
+              <IconPark href="#home" className="!h-6 !w-6" />
+            </Link>
+          </button>
+          <button onClick={() => setModalOpen(true)}>
+            <IconPark href="#config" className="!h-6 !w-6" />
+          </button>
+        </div>
 
         <div className="flex h-16 w-16 items-center justify-center rounded-full bg-white text-5xl">
           <Image src="/peppa.svg" width={50} height={50} alt="avatar" />
         </div>
         <div className="text-lg font-medium">{userInfo?.username}</div>
         <div className="absolute -bottom-10 w-full px-4">
-          <div className="grid grid-cols-2 rounded-lg bg-bg-100 py-4 text-center shadow-md">
+          <div className="grid grid-cols-2 rounded-lg bg-white py-4 text-center shadow-md">
             <Statistic title="记账总天数" valueStyle={valueStyle} value={totals.days} />
             <Statistic title="记账总笔数" valueStyle={valueStyle} value={totals.times} />
           </div>
@@ -108,6 +138,24 @@ export default function User() {
         }}
         onCancel={() => setVisible(false)}
       ></Modal>
+      <Modal
+        centered
+        title="默认月预算"
+        okText="确认"
+        cancelText="取消"
+        open={modalOpen}
+        onCancel={() => setModalOpen(false)}
+        onOk={saveBudget}
+        closeIcon
+      >
+        <InputNumber
+          style={{ width: '100%' }}
+          value={budget}
+          min={0}
+          max={MAX_AMOUNT}
+          onChange={(value) => setBudget(value ?? 0)}
+        />
+      </Modal>
     </main>
   )
 }

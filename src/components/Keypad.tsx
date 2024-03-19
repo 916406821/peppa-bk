@@ -9,7 +9,7 @@ import 'dayjs/locale/zh-cn'
 import { useEffect, useState } from 'react'
 import MaskDatePicker from './MaskDatePicker'
 
-const MAX_AMOUNT = 999999
+export const MAX_AMOUNT = 999999
 
 interface Props {
   editValue?: Transation

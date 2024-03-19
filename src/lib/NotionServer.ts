@@ -63,6 +63,8 @@ export default class NotionService {
             id: data[0].id,
             username: data[0].properties.username.title[0].plain_text,
             email: data[0].properties.email.email,
+            month_budget: data[0].properties.month_budget.number,
+            year_budget: data[0].properties.year_budget.number,
           },
         }
       }
@@ -103,6 +105,46 @@ export default class NotionService {
       console.error(error)
       return {
         success: false,
+      }
+    }
+  }
+
+  /**
+   * 更新默认预算
+   */
+  async updateBudget(params: { month_budget: number; userId?: string }): Promise<Success> {
+    if (!params.userId) {
+      return {
+        success: false,
+        message: '更新失败',
+      }
+    }
+    try {
+      const response = (await this.client.pages.update({
+        page_id: params.userId,
+        properties: {
+          month_budget: {
+            number: params.month_budget,
+          },
+        },
+      })) as any
+
+      return {
+        success: true,
+        message: '更新成功',
+        data: {
+          id: response.id,
+          username: response.properties.username.title[0].plain_text,
+          email: response.properties.email.email,
+          month_budget: response.properties.month_budget.number,
+          year_budget: response.properties.year_budget.number,
+        },
+      }
+    } catch (error) {
+      console.error(error)
+      return {
+        success: false,
+        message: '更新失败',
       }
     }
   }

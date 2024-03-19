@@ -143,7 +143,7 @@ export default function AddTransation({ tags, onSubmit, editValue, onDelete }: P
         style={{
           height: `${maxHeight}px`,
         }}
-        className="overflow-y-auto rounded-xl bg-bg-200 p-4"
+        className="overflow-y-auto no-scrollbar rounded-xl bg-bg-200 p-4"
       >
         <div className="grid grid-cols-4 gap-4 text-sm">
           {tags

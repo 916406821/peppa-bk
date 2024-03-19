@@ -3,6 +3,8 @@ type User = {
   username: string
   password: string
   email: string
+  month_budget: number
+  year_budget: number
 }
 
 type UserInfo = Omit<User, 'password'>
@@ -38,5 +40,10 @@ type GroupTransation = {
   outcomeTotal: string
 }
 
-export type { Category, CreateTransationParams, GroupTransation, Transation, User, UserInfo }
+type Budget = {
+  year_budget: number
+  month_budget: number
+}
+
+export type { Budget, Category, CreateTransationParams, GroupTransation, Transation, User, UserInfo }
 

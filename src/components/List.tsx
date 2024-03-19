@@ -12,8 +12,8 @@ interface Prop {
 
 export default function List({ list, loading, tags, onClick }: Prop) {
   return (
-    <div className="no-scrollbar mx-auto mt-4 box-border grid h-full w-11/12 grow overflow-y-auto rounded-t-3xl bg-bg-200 px-4 py-5">
-      <div className="mb-10">
+    <div className="no-scrollbar mx-auto box-border grid h-full w-full grow overflow-y-auto rounded-t-2xl bg-white p-6">
+      <div className="mb-6">
         {loading ? (
           <>
             <Skeleton loading={loading} avatar active />

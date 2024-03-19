@@ -7,12 +7,12 @@ import List from '@/components/List'
 import Modal from '@/components/Modal'
 import Total from '@/components/Total'
 import { getGroupList } from '@/lib/utils'
-import { Category, GroupTransation, Transation, UserInfo } from '@/types'
+import { Budget, Category, GroupTransation, Transation, UserInfo } from '@/types'
 import { message } from 'antd'
 import dayjs from 'dayjs'
 import 'dayjs/locale/zh-cn'
 import { redirect } from 'next/navigation'
-import { useCallback, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 dayjs.locale('zh-cn')
 
 export default function Home() {
@@ -27,21 +27,35 @@ export default function Home() {
   const [loading, setLoading] = useState(true)
   const [open, setOpen] = useState(false)
   const [editValue, setEditValue] = useState<Transation>()
+  const [budget, setBudget] = useState<Budget>()
 
   useEffect(() => {
     if (typeof window !== 'undefined' && window.localStorage) {
-      const userInfo = JSON.parse(localStorage.getItem('userInfo')!)
+      const userInfo = JSON.parse(localStorage.getItem('userInfo')!) as UserInfo
 
       if (!userInfo) {
         message.warning('未登录')
         redirect('/login')
       } else {
         setUserInfo(userInfo)
+        setBudget({
+          month_budget: userInfo.month_budget,
+          year_budget: userInfo.year_budget,
+        })
       }
     }
   }, [])
 
-  const fetchData = useCallback(async () => {
+  useEffect(() => {
+    async function fetchTags() {
+      const response = await fetch('/api/category')
+      const data = (await response.json()) as Category[]
+      setTags(data)
+    }
+    fetchTags()
+  }, [])
+
+  const fetchData = async () => {
     if (!userInfo) return
     setLoading(true)
     const response = await fetch(`/api/transation?month=${month}`, {
@@ -54,20 +68,11 @@ export default function Home() {
     setGroupList(groupList)
     setMonthTotal(monthTotal)
     setLoading(false)
-  }, [month, userInfo])
-
-  useEffect(() => {
-    async function fetchTags() {
-      const response = await fetch('/api/category')
-      const data = (await response.json()) as Category[]
-      setTags(data)
-    }
-    fetchTags()
-  }, [])
+  }
 
   useEffect(() => {
     fetchData()
-  }, [fetchData])
+  }, [userInfo, month])
 
   const handleMonthChange = (month: string) => {
     setMonth(month)
@@ -90,7 +95,12 @@ export default function Home() {
   return (
     <main className="mx-auto flex h-screen w-screen max-w-[720px] flex-col items-center">
       <Header />
-      <Total month={month} monthTotal={monthTotal} onMonthChange={handleMonthChange} />
+      <Total
+        budget={budget}
+        month={month}
+        monthTotal={monthTotal}
+        onMonthChange={handleMonthChange}
+      />
       <List
         loading={loading}
         list={groupList}
