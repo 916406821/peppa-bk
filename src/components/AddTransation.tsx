@@ -45,56 +45,56 @@ export default function AddTransation({ tags, onSubmit, editValue, onDelete }: P
 
   const handleSubmit = async (result: Omit<CreateTransationParams, 'category' | 'userId'>) => {
     setLoading(true)
+
     const transation: Omit<CreateTransationParams, 'userId'> = {
       ...result,
       amount: activeTag?.type === 'income' ? result.amount : -result.amount,
       category: activeTag!,
     }
 
-    if (!!editValue) {
-      await fetch('/api/transation/update', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${userInfo?.id}`,
-        },
-        body: JSON.stringify({ params: transation, pageId: editValue.id }),
-      })
-      message.success('修改成功')
+    const requestOptions: RequestInit = {
+      method: editValue ? 'PUT' : 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${userInfo?.id}`,
+      },
+      body: JSON.stringify(editValue ? { params: transation, pageId: editValue.id } : transation),
+    }
+
+    const response = await fetch('/api/transation', requestOptions)
+
+    if (response.ok) {
+      message.success(editValue ? '修改成功' : '记账成功')
+      onSubmit()
     } else {
-      await fetch('/api/transation/create', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${userInfo?.id}`,
-        },
-        body: JSON.stringify(transation),
-      })
-      message.success('记账成功')
+      message.error('操作失败，请重试')
     }
 
     setLoading(false)
-    onSubmit()
   }
 
   const handleDelete = async () => {
     setLoading(true)
-    const respose = await fetch('/api/transation/delete', {
-      method: 'POST',
+    const respose = await fetch('/api/transation', {
+      method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${userInfo?.id}`,
       },
       body: JSON.stringify({ pageId: editValue?.id }),
     })
-    const data = await respose.json()
-    setLoading(false)
-    if (data.success) {
-      message.success(data.message)
-      onDelete()
-    } else {
-      message.error(data.message)
+
+    if (respose.ok) {
+      const data = await respose.json()
+      if (data.success) {
+        message.success(data.message)
+        onDelete()
+      } else {
+        message.error(data.message)
+      }
     }
+
+    setLoading(false)
   }
 
   const items: TabsProps['items'] = [
@@ -143,7 +143,7 @@ export default function AddTransation({ tags, onSubmit, editValue, onDelete }: P
         style={{
           height: `${maxHeight}px`,
         }}
-        className="overflow-y-auto no-scrollbar rounded-xl bg-bg-200 p-4"
+        className="no-scrollbar overflow-y-auto rounded-xl bg-bg-200 p-4"
       >
         <div className="grid grid-cols-4 gap-4 text-sm">
           {tags
