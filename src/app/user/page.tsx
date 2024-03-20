@@ -89,7 +89,7 @@ export default function User() {
   }
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-lg flex-col items-center gap-6 bg-white">
+    <main className="mx-auto flex h-svh max-w-lg flex-col items-center gap-6 bg-white">
       <header className="relative flex w-full flex-col items-center gap-2 bg-primary-100 p-4 pb-16">
         <div className="flex w-full justify-between">
           <button>

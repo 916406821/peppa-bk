@@ -93,7 +93,7 @@ export default function Home() {
   }
 
   return (
-    <main className="mx-auto flex h-screen max-w-lg flex-col items-center">
+    <main className="mx-auto flex h-svh max-w-lg flex-col items-center">
       <Header />
       <Total
         budget={budget}
