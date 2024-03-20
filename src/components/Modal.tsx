@@ -10,7 +10,7 @@ export interface Props {
 export default function Modal({ open, onCancel, destroyOnClose, children }: Props) {
   return (
     <div
-      className={`fixed top-0 mx-auto h-full w-full max-w-[720px] bg-bg-100 ${open ? 'block' : 'hidden'}`}
+      className={`fixed top-0 mx-auto h-full w-full max-w-lg bg-bg-100 ${open ? 'block' : 'hidden'}`}
     >
       <div className="relative h-full w-full overflow-hidden p-4">
         <button className="absolute right-4 top-7 z-50 text-sm" onClick={onCancel}>

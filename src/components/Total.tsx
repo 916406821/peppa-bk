@@ -1,3 +1,4 @@
+import { formatAmount } from '@/lib/utils'
 import { Budget } from '@/types'
 import { Progress } from 'antd'
 import BigNumber from 'bignumber.js'
@@ -69,11 +70,13 @@ export default function Total({ budget, month, monthTotal, onMonthChange }: Prop
         </div>
         <div className="flex flex-col gap-3">
           <div className="text-sm">收入</div>
-          <button className="text-left text-lg">{monthTotal.monthIncomeTotal}</button>
+          <button className="text-left text-lg">{formatAmount(monthTotal.monthIncomeTotal)}</button>
         </div>
         <div className="flex flex-col gap-3">
           <div className="text-sm">支出</div>
-          <button className="text-left text-lg">{monthTotal.monthOutcomeTotal}</button>
+          <button className="text-left text-lg">
+            {formatAmount(monthTotal.monthOutcomeTotal)}
+          </button>
         </div>
       </div>
       <button className="relative top-3 flex w-full items-center justify-between gap-4 rounded-xl bg-white p-4 shadow-md">
@@ -91,14 +94,14 @@ export default function Total({ budget, month, monthTotal, onMonthChange }: Prop
           percent={percent}
           strokeWidth={15}
         />
-        <div className="grid grid-rows-2 gap-2">
+        <div className="grid w-full grid-rows-2 gap-2">
           <div className="flex items-center justify-between gap-2 text-base text-gray-700">
             <div className="tracking-wider">剩余预算：</div>
-            <div>{remainBudget}</div>
+            <div>{formatAmount(remainBudget)}</div>
           </div>
           <div className="flex items-center justify-between gap-2 text-sm text-gray-500">
             <div className="tracking-wider">本月预算：</div>
-            <div>{budget?.month_budget}</div>
+            <div>{formatAmount(budget?.month_budget ?? 0)}</div>
           </div>
         </div>
         <IconPark href="#right-one" className="text-gray-300" />

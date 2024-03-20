@@ -93,7 +93,7 @@ export default function Home() {
   }
 
   return (
-    <main className="mx-auto flex h-screen w-screen max-w-[720px] flex-col items-center">
+    <main className="mx-auto flex h-screen max-w-lg flex-col items-center">
       <Header />
       <Total
         budget={budget}
@@ -108,13 +108,13 @@ export default function Home() {
         onClick={(value) => handleClickItem(value)}
       />
       <button
-        className="fixed bottom-6 left-4 flex h-10 w-10 items-center justify-center rounded-full bg-primary-100"
+        className="fixed bottom-6 left-4 flex h-10 w-10 items-center justify-center rounded-full bg-primary-200 shadow-md"
         onClick={handleMenu}
       >
         <IconPark href="#all-application" className="text-white" />
       </button>
       <button
-        className="fixed bottom-6 right-4 flex h-10 w-10 items-center justify-center rounded-full bg-primary-100"
+        className="fixed bottom-6 right-4 flex h-10 w-10 items-center justify-center rounded-full bg-primary-200 shadow-md"
         onClick={handleAdd}
       >
         <IconPark href="#plus" className="text-white" />

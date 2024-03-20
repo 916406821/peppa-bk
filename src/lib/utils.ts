@@ -40,3 +40,7 @@ export function getGroupList(list: Transation[]) {
     monthOutcomeTotal,
   }
 }
+
+export const formatAmount = (amount: string | number) => {
+  return new BigNumber(amount).toFixed(2)
+}
