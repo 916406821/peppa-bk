@@ -23,6 +23,15 @@ export default function Keypad({ editValue, onSubmit }: Props) {
   const [note, setNote] = useState('')
   const [openPicker, setOpenPicker] = useState(false)
   const [date, setDate] = useState(dayjs().format('YYYY-MM-DD'))
+  const [paddingBottom, setPaddingBottom] = useState(0)
+
+  useEffect(() => {
+    const safeAreaHeight = window.screen.height - window.innerHeight
+
+    if (window) {
+      setPaddingBottom(Math.floor(safeAreaHeight / 2))
+    }
+  }, [])
 
   useEffect(() => {
     if (!!editValue) {
@@ -92,7 +101,13 @@ export default function Keypad({ editValue, onSubmit }: Props) {
   const isToday = dayjs().format('YYYY-MM-DD') === date
 
   return (
-    <div id="keypad" className="absolute bottom-0 left-0 w-full">
+    <div
+      id="keypad"
+      className="absolute bottom-0 left-0 w-full"
+      style={{
+        paddingBottom: `${paddingBottom}px`,
+      }}
+    >
       <div className="bg-white p-2">
         <div className=" flex flex-row-reverse px-2 text-xl">{amount}</div>
         <div className="flex items-center rounded bg-gray-100 px-2">
