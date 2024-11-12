@@ -164,10 +164,10 @@ export default class NotionService {
         ],
       })
 
-      const categorys: Category[] = []
+      const category: Category[] = []
 
       response?.results?.forEach((page: any) => {
-        categorys.push({
+        category.push({
           id: page.id,
           name: page.properties.name.title[0].plain_text,
           type: page.properties.type.select.name,
@@ -175,7 +175,7 @@ export default class NotionService {
         })
       })
 
-      return categorys
+      return category
     } catch (error) {
       console.error(error)
       return []
@@ -187,7 +187,7 @@ export default class NotionService {
    */
   async createCategory(params: Category): Promise<Result> {
     try {
-      const response = await this.client.pages.create({
+      return await this.client.pages.create({
         parent: { database_id: category_id },
         properties: {
           name: {
@@ -209,8 +209,6 @@ export default class NotionService {
           },
         },
       })
-
-      return response
     } catch (error) {
       console.error(error)
       return []
@@ -220,7 +218,7 @@ export default class NotionService {
   /**
    * 查询账目记录
    */
-  async queryTransation({
+  async queryTransaction({
     month,
     userId,
   }: {
@@ -290,10 +288,10 @@ export default class NotionService {
         filter: filterOptions,
       })
 
-      const transations: Transation[] = []
+      const transactions: Transation[] = []
 
       response?.results?.forEach((page: any) => {
-        transations.push({
+        transactions.push({
           id: page.id,
           userId: page.properties.user.relation[0].id,
           category: page.properties.category.relation[0],
@@ -302,7 +300,7 @@ export default class NotionService {
           note: page.properties.note.title[0].plain_text,
         })
       })
-      return transations
+      return transactions
     } catch (error) {
       console.error(error)
       return []
@@ -312,9 +310,9 @@ export default class NotionService {
   /**
    * 创建账目记录
    */
-  async createTransation(params: CreateTransationParams): Promise<Result> {
+  async createTransaction(params: CreateTransationParams): Promise<Result> {
     try {
-      const response = await this.client.pages.create({
+      return await this.client.pages.create({
         parent: { database_id: transation_id },
         properties: {
           category: {
@@ -356,8 +354,6 @@ export default class NotionService {
           },
         },
       })
-
-      return response
     } catch (error) {
       console.error(error)
       return []
@@ -367,7 +363,7 @@ export default class NotionService {
   /**
    * 更新账目记录
    */
-  async updateTransation({
+  async updateTransaction({
     pageId,
     params,
   }: {
@@ -375,7 +371,7 @@ export default class NotionService {
     params: Transation
   }): Promise<Result> {
     try {
-      const response = await this.client.pages.update({
+      return await this.client.pages.update({
         page_id: pageId,
         properties: {
           category: {
@@ -417,8 +413,6 @@ export default class NotionService {
           },
         },
       })
-
-      return response
     } catch (error) {
       console.error(error)
       return []
@@ -428,7 +422,7 @@ export default class NotionService {
   /**
    * 删除账目记录
    */
-  async removeTransation({ pageId }: { pageId: string }) {
+  async removeTransaction({ pageId }: { pageId: string }) {
     try {
       await this.client.pages.update({
         page_id: pageId,

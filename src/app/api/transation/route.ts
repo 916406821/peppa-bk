@@ -14,7 +14,7 @@ export async function GET(res: NextRequest) {
   const month = params.get('month') ?? undefined
   const userId = getUserId(res)
 
-  const data = await notionServer.queryTransation({ month, userId })
+  const data = await notionServer.queryTransaction({ month, userId })
   return NextResponse.json(data, { status: 200 })
 }
 
@@ -23,7 +23,7 @@ export async function POST(res: NextRequest) {
   const userId = getUserId(res)
 
   params = { ...params, userId }
-  const data = await notionServer.createTransation(params)
+  const data = await notionServer.createTransaction(params)
   return NextResponse.json(data, { status: 200 })
 }
 
@@ -32,7 +32,7 @@ export async function PUT(res: NextRequest) {
   const userId = getUserId(res)
 
   const { params: ps, pageId } = params
-  const data = await notionServer.updateTransation({ params: { ...ps, userId }, pageId })
+  const data = await notionServer.updateTransaction({ params: { ...ps, userId }, pageId })
   return NextResponse.json(data, { status: 200 })
 }
 
@@ -42,6 +42,6 @@ export async function DELETE(res: NextRequest) {
 
   if (!userId) return NextResponse.json({ message: 'Unauthorized' }, { status: 401 })
 
-  const data = await notionServer.removeTransation(params)
+  const data = await notionServer.removeTransaction(params)
   return NextResponse.json(data, { status: 200 })
 }
