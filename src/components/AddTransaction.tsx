@@ -11,7 +11,7 @@ interface Props {
   onDelete: () => void
 }
 
-export default function AddTransation({ tags, onSubmit, editValue, onDelete }: Props) {
+export default function AddTransaction({ tags, onSubmit, editValue, onDelete }: Props) {
   const [activeKey, setActiveKey] = useState('outcome')
   const [activeTag, setActiveTag] = useState<Category | null>(null)
   const [loading, setLoading] = useState(false)

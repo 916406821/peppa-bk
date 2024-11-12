@@ -1,6 +1,6 @@
 'use client'
 
-import AddTransation from '@/components/AddTransation'
+import AddTransaction from '@/components/AddTransaction'
 import Header from '@/components/Header'
 import IconPark from '@/components/IconPark'
 import List from '@/components/List'
@@ -120,7 +120,7 @@ export default function Home() {
         <IconPark href="#plus" className="text-white" />
       </button>
       <Modal open={open} destroyOnClose onCancel={() => setOpen(false)}>
-        <AddTransation
+        <AddTransaction
           tags={tags}
           editValue={editValue}
           onSubmit={() => {

@@ -8,6 +8,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
+import Button from "@/components/Button";
 
 const valueStyle = {
   fontSize: 18,
@@ -92,14 +93,14 @@ export default function User() {
     <main className="mx-auto flex h-svh max-w-lg flex-col items-center gap-6 bg-white">
       <header className="relative flex w-full flex-col items-center gap-2 bg-primary-100 p-4 pb-16">
         <div className="flex w-full justify-between">
-          <button>
+          <Button>
             <Link href="/">
               <IconPark href="#home" className="!h-6 !w-6" />
             </Link>
-          </button>
-          <button onClick={() => setModalOpen(true)}>
+          </Button>
+          <Button onClick={() => setModalOpen(true)}>
             <IconPark href="#config" className="!h-6 !w-6" />
-          </button>
+          </Button>
         </div>
 
         <div className="flex h-16 w-16 items-center justify-center rounded-full bg-white text-5xl">
