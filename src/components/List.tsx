@@ -1,13 +1,13 @@
-import type { Category, GroupTransation, Transation } from '@/types'
+import type { Category, GroupTransaction, Transaction } from '@/types'
 import { Skeleton } from 'antd'
 import dayjs from 'dayjs'
 import IconPark from './IconPark'
 
 interface Prop {
   loading: boolean
-  list: GroupTransation[]
+  list: GroupTransaction[]
   tags: Category[]
-  onClick: (value: Transation) => void
+  onClick: (value: Transaction) => void
 }
 
 export default function List({ list, loading, tags, onClick }: Prop) {

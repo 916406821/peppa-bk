@@ -1,6 +1,6 @@
 'use client'
 
-import { CreateTransationParams, Transation } from '@/types'
+import { CreateTransactionParams, Transaction } from '@/types'
 import { Calendar, DeleteKey } from '@icon-park/react'
 import { message } from 'antd'
 import locale from 'antd/es/date-picker/locale/zh_CN'
@@ -12,8 +12,8 @@ import MaskDatePicker from './MaskDatePicker'
 export const MAX_AMOUNT = 999999
 
 interface Props {
-  editValue?: Transation
-  onSubmit: (result: Omit<CreateTransationParams, 'category' | 'userId'>) => void
+  editValue?: Transaction
+  onSubmit: (result: Omit<CreateTransactionParams, 'category' | 'userId'>) => void
 }
 
 export default function Keypad({ editValue, onSubmit }: Props) {

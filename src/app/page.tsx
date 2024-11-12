@@ -7,7 +7,7 @@ import List from '@/components/List'
 import Modal from '@/components/Modal'
 import Total from '@/components/Total'
 import { getGroupList } from '@/lib/utils'
-import { Budget, Category, GroupTransation, Transation, UserInfo } from '@/types'
+import { Budget, Category, GroupTransaction, Transaction, UserInfo } from '@/types'
 import { message } from 'antd'
 import dayjs from 'dayjs'
 import 'dayjs/locale/zh-cn'
@@ -18,7 +18,7 @@ dayjs.locale('zh-cn')
 export default function Home() {
   const [userInfo, setUserInfo] = useState<UserInfo | null>(null)
   const [month, setMonth] = useState(dayjs().format('YYYY-MM'))
-  const [groupList, setGroupList] = useState<GroupTransation[]>([])
+  const [groupList, setGroupList] = useState<GroupTransaction[]>([])
   const [monthTotal, setMonthTotal] = useState({
     monthIncomeTotal: '0',
     monthOutcomeTotal: '0',
@@ -26,7 +26,7 @@ export default function Home() {
   const [tags, setTags] = useState<Category[]>([])
   const [loading, setLoading] = useState(true)
   const [open, setOpen] = useState(false)
-  const [editValue, setEditValue] = useState<Transation>()
+  const [editValue, setEditValue] = useState<Transaction>()
   const [budget, setBudget] = useState<Budget>()
 
   useEffect(() => {
@@ -63,7 +63,7 @@ export default function Home() {
         Authorization: `Bearer ${userInfo?.id}`,
       },
     })
-    const data = (await response.json()) as Transation[]
+    const data = (await response.json()) as Transaction[]
     const { groupList, ...monthTotal } = getGroupList(data)
     setGroupList(groupList)
     setMonthTotal(monthTotal)
@@ -82,7 +82,7 @@ export default function Home() {
     message.warning('功能开发中...')
   }
 
-  const handleClickItem = (value: Transation) => {
+  const handleClickItem = (value: Transaction) => {
     setEditValue(value)
     setOpen(true)
   }

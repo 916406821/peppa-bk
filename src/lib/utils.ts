@@ -1,8 +1,8 @@
-import { GroupTransation, Transation } from '@/types'
+import { GroupTransaction, Transaction } from '@/types'
 import BigNumber from 'bignumber.js'
 
-export function getGroupList(list: Transation[]) {
-  const groupMap = new Map<string, GroupTransation>()
+export function getGroupList(list: Transaction[]) {
+  const groupMap = new Map<string, GroupTransaction>()
   let monthIncomeTotal = '0'
   let monthOutcomeTotal = '0'
 

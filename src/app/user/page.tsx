@@ -2,7 +2,7 @@
 
 import IconPark from '@/components/IconPark'
 import { MAX_AMOUNT } from '@/components/Keypad'
-import { Transation, UserInfo } from '@/types'
+import { Transaction, UserInfo } from '@/types'
 import { InputNumber, Modal, Statistic, message } from 'antd'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -45,7 +45,7 @@ export default function User() {
           Authorization: `Bearer ${userInfo?.id}`,
         },
       })
-      const data = (await response.json()) as Transation[]
+      const data = (await response.json()) as Transaction[]
 
       const days: string[] = []
       data.forEach((item) => {
@@ -105,7 +105,7 @@ export default function User() {
         <div className="flex h-16 w-16 items-center justify-center rounded-full bg-white text-5xl">
           <Image src="/peppa.svg" width={50} height={50} alt="avatar" />
         </div>
-        <div className="text-lg font-medium">{userInfo?.username}</div>
+        <div className="text-lg font-medium">{userInfo?.nickname}</div>
         <div className="absolute -bottom-10 w-full px-4">
           <div className="grid grid-cols-2 rounded-lg bg-white py-4 text-center shadow-md">
             <Statistic title="记账总天数" valueStyle={valueStyle} value={totals.days} />

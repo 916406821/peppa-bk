@@ -1,4 +1,4 @@
-import { Category, CreateTransationParams, Transation, UserInfo } from '@/types'
+import { Category, CreateTransactionParams, Transaction, UserInfo } from '@/types'
 import { Modal, Spin, Tabs, TabsProps, message } from 'antd'
 import { useEffect, useState } from 'react'
 import IconPark from './IconPark'
@@ -6,7 +6,7 @@ import Keypad from './Keypad'
 
 interface Props {
   tags: Category[]
-  editValue?: Transation
+  editValue?: Transaction
   onSubmit: () => void
   onDelete: () => void
 }
@@ -43,10 +43,10 @@ export default function AddTransation({ tags, onSubmit, editValue, onDelete }: P
     setActiveTag(active ?? null)
   }
 
-  const handleSubmit = async (result: Omit<CreateTransationParams, 'category' | 'userId'>) => {
+  const handleSubmit = async (result: Omit<CreateTransactionParams, 'category' | 'userId'>) => {
     setLoading(true)
 
-    const transation: Omit<CreateTransationParams, 'userId'> = {
+    const transation: Omit<CreateTransactionParams, 'userId'> = {
       ...result,
       amount: activeTag?.type === 'income' ? result.amount : -result.amount,
       category: activeTag!,

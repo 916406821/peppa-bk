@@ -1,5 +1,6 @@
 type User = {
   id: string
+  nickname: string
   username: string
   password: string
   email: string
@@ -16,7 +17,7 @@ type Category = {
   type: 'income' | 'outcome'
 }
 
-type CreateTransationParams = {
+type CreateTransactionParams = {
   category: Category
   amount: number
   date: string
@@ -24,7 +25,7 @@ type CreateTransationParams = {
   note: string
 }
 
-type Transation = {
+type Transaction = {
   id: string
   category: Category
   amount: number
@@ -33,9 +34,9 @@ type Transation = {
   note: string
 }
 
-type GroupTransation = {
+type GroupTransaction = {
   date: string
-  list: Transation[]
+  list: Transaction[]
   incomeTotal: string
   outcomeTotal: string
 }
@@ -45,5 +46,5 @@ type Budget = {
   month_budget: number
 }
 
-export type { Budget, Category, CreateTransationParams, GroupTransation, Transation, User, UserInfo }
+export type { Budget, Category, CreateTransactionParams, GroupTransaction, Transaction, User, UserInfo }
 
