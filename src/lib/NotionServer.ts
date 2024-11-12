@@ -1,4 +1,4 @@
-import { Category, CreateTransationParams, Transation } from '@/types'
+import { Category, CreateTransactionParams, Transaction } from '@/types'
 import { Client } from '@notionhq/client'
 import dayjs from 'dayjs'
 
@@ -6,7 +6,7 @@ const auth = process.env.NOTION_ACCESS_TOKEN
 
 const user_id = process.env.NOTION_DATABASE_USER_ID ?? '' // 用户表
 const category_id = process.env.NOTION_DATABASE_CATEGORY_ID ?? '' // 账目类别表
-const transation_id = process.env.NOTION_DATABASE_TRANSATION_ID ?? '' // 账目记录表
+const transaction_id = process.env.NOTION_DATABASE_TRANSACTION_ID ?? '' // 账目记录表
 
 type LoginParams = {
   username: string
@@ -61,6 +61,7 @@ export default class NotionService {
           message: '登录成功',
           data: {
             id: data[0].id,
+            nickname: data[0].properties.nickname.rich_text[0].plain_text,
             username: data[0].properties.username.title[0].plain_text,
             email: data[0].properties.email.email,
             month_budget: data[0].properties.month_budget.number,
@@ -219,12 +220,12 @@ export default class NotionService {
    * 查询账目记录
    */
   async queryTransaction({
-    month,
-    userId,
-  }: {
+                           month,
+                           userId,
+                         }: {
     month?: string
     userId?: string
-  }): Promise<Transation[]> {
+  }): Promise<Transaction[]> {
     let filterOptions
 
     if (!userId) {
@@ -283,12 +284,12 @@ export default class NotionService {
 
     try {
       const response = await this.client.databases.query({
-        database_id: transation_id,
+        database_id: transaction_id,
         sorts: [{ property: 'date', direction: 'descending' }],
         filter: filterOptions,
       })
 
-      const transactions: Transation[] = []
+      const transactions: Transaction[] = []
 
       response?.results?.forEach((page: any) => {
         transactions.push({
@@ -310,10 +311,10 @@ export default class NotionService {
   /**
    * 创建账目记录
    */
-  async createTransaction(params: CreateTransationParams): Promise<Result> {
+  async createTransaction(params: CreateTransactionParams): Promise<Result> {
     try {
       return await this.client.pages.create({
-        parent: { database_id: transation_id },
+        parent: { database_id: transaction_id },
         properties: {
           category: {
             type: 'relation',
@@ -364,11 +365,11 @@ export default class NotionService {
    * 更新账目记录
    */
   async updateTransaction({
-    pageId,
-    params,
-  }: {
+                            pageId,
+                            params,
+                          }: {
     pageId: string
-    params: Transation
+    params: Transaction
   }): Promise<Result> {
     try {
       return await this.client.pages.update({
